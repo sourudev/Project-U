@@ -65,7 +65,20 @@ async def upload(ctx, attachment: discord.Attachment):
     bytes_io = io.BytesIO(file_data)
     await message.edit(content="คำนวนขนาดของไฟล์ ")
     bytes_size = len(bytes_io.getbuffer())
-    await message.edit(content=f"ขนาดbytesของไฟล์: {bytes_size}")
+    mb_size = bytes_size / (1024 * 1024)  # Convert bytes to megabytes
+    gb_size = mb_size / 1024  # Convert megabytes to gigabytes
+
+    if gb_size >= 1:
+        size_text = f"{gb_size:.2f} GB"
+    elif mb_size >= 1:
+        size_text = f"{mb_size:.2f} MB"
+    else:
+        size_text = f"{bytes_size} bytes"
+
+    await message.edit(content=f"ขนาดไฟล์: {size_text}")
+
+
+
     file = (file_name, bytes_io)
 
     try:
@@ -91,7 +104,7 @@ async def upload(ctx, attachment: discord.Attachment):
                     embed.add_field(name="การเข้ารหัสของไฟล์ (sha256)", value=hash_value, inline=False)
                     embed.add_field(name="ชื่อไฟล์", value=file_name, inline=True)
                     embed.add_field(name="ประเภทไฟล์", value=file_type, inline=True)
-                    embed.add_field(name="ขนาดไฟล์", value=f"{bytes_size} bytes", inline=True)
+                    embed.add_field(name="ขนาดไฟล์", value=f"{size_text}", inline=True)
                     if is_nsfw:
                         embed.add_field(name="ลิงค์ 0x0 ของไฟล์", value=f"||{file_url}||", inline=False)
                     else:
