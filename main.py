@@ -8,6 +8,7 @@ import json
 import requests
 from discord.ext import commands
 from dotenv import load_dotenv
+import asyncio
 
 load_dotenv()
 
@@ -32,9 +33,30 @@ def load_responses(url):
     response = json.loads(requests.get(url).content)["responses"]
     return response
 
+def save_uploaded_file_count(count):
+    data = {"uploaded_file_count": count}
+    with open("data.json", "w") as json_file:
+        json.dump(data, json_file)
+
+def load_uploaded_file_count():
+    try:
+        with open("data.json", "r") as json_file:
+            data = json.load(json_file)
+            return data.get("uploaded_file_count", 0)  # Default to 0 if "count" key doesn't exist
+    except (FileNotFoundError, json.JSONDecodeError):
+        return 0  # Return 0 if file is not found or invalid JSON
+
+
 responses = load_responses(
     "https://raw.githubusercontent.com/sourudev/Project-U/main/fact.JSON"
 )
+
+async def update_status():
+    global uploaded_file_count
+    while True:
+        activity = discord.Activity(type=discord.ActivityType.watching, name=f"อัปโหลดไปแล้ว {uploaded_file_count} ไฟล์")
+        await bot.change_presence(activity=activity)
+        await asyncio.sleep(5)  # Sleep for 5 seconds before updating again
 
 @bot.event
 async def on_ready():
@@ -46,9 +68,16 @@ async def on_ready():
     )
 
     os.system('clear' if os.name == 'posix' else 'cls')
-    
+
+    global uploaded_file_count
+    uploaded_file_count = load_uploaded_file_count()  # Load the count from the JSON file
+
+    # Start the status update coroutine as a background task
+    bot.loop.create_task(update_status())
+
     print_in_color(f"{bot.user} is ready to upload!", "1;97")
     print_in_color(f"Invite link: {invite_link}", "1;36")
+
 
 @bot.hybrid_command(name="upload", description="อัปโหลดไฟล์")
 async def upload(ctx, attachment: discord.Attachment):
@@ -97,6 +126,12 @@ async def upload(ctx, attachment: discord.Attachment):
                     description = ""
                     preview_length = 100
                     file_preview = file_data.decode(errors="ignore")[:preview_length]
+                    global uploaded_file_count
+                     # ...
+
+                    uploaded_file_count += 1
+                    save_uploaded_file_count(uploaded_file_count)
+
                     if attachment.content_type not in media_content_types:
                         description = f"```{file_type}\n{file_preview}[...]```"
 
@@ -125,6 +160,17 @@ async def upload(ctx, attachment: discord.Attachment):
         embed = discord.Embed(title="ขนส่งวิญญาณผิดพลาด", color=0xff0000)
         embed.add_field(name="ความผิดพลาดของการอัปโหลด", value=str(e), inline=False)
         await message.edit(content="", embed=embed)
+
+
+@bot.hybrid_command(name="status", description="แสดงการอัปโหลดและปิง")
+async def status(ctx):
+    global uploaded_file_count
+
+    ping = round(bot.latency * 1000)  # Convert to milliseconds
+    embed = discord.Embed(title="<a:alert:982206199757955082> สถานะของบอท", color=0xff0000)
+    embed.add_field(name=f"อัปโหลดไปแล้ว: ", value=f"{uploaded_file_count}", inline=False)
+    embed.add_field(name=f"Ping: ", value=f"{ping}",inline=False)
+    await ctx.send(content="", embed=embed)
 
 if __name__ == "__main__":
     bot.run(TOKEN)
