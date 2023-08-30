@@ -31,7 +31,8 @@ responses = load_responses(
 
 @bot.event
 async def on_ready():
-    await _on_ready(bot)
+    global uploaded_file_count
+    await _on_ready(bot,uploaded_file_count)
 
 
 @bot.hybrid_command(name="upload", description="อัปโหลดไฟล์")

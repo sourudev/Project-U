@@ -23,8 +23,8 @@ def load_uploaded_file_count():
         return 0  # Return 0 if file is not found or invalid JSON
     
 
-async def update_status(bot):
-    global uploaded_file_count
+async def update_status(bot,uploaded_file_count):
+   
     while True:
         activity = discord.Activity(type=discord.ActivityType.watching, name=f"อัปโหลดไปแล้ว {uploaded_file_count} ไฟล์")
         await bot.change_presence(activity=activity)
