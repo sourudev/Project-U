@@ -36,7 +36,8 @@ async def on_ready():
 
 @bot.hybrid_command(name="upload", description="อัปโหลดไฟล์")
 async def upload(ctx, attachment: discord.Attachment):
-    await _upload(ctx, attachment,responses,media_content_types)
+    global uploaded_file_count
+    await _upload(ctx, attachment,responses,media_content_types,uploaded_file_count)
 
 @bot.hybrid_command(name="status", description="แสดงการอัปโหลดและปิง")
 async def status(ctx):

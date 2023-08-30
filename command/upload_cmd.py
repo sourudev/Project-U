@@ -6,7 +6,7 @@ import hashlib
 import random
 from util.function import print_in_color,save_uploaded_file_count
 
-async def _upload(ctx, attachment: discord.Attachment,responses,media_content_types):
+async def _upload(ctx, attachment: discord.Attachment,responses,media_content_types,uploaded_file_count):
     await ctx.defer()
     random_msg = random.choice(responses)
     message = await ctx.send("เริ่มกระบวนการขนส่งวิญญาณ..")
@@ -52,7 +52,7 @@ async def _upload(ctx, attachment: discord.Attachment,responses,media_content_ty
                     description = ""
                     preview_length = 100
                     file_preview = file_data.decode(errors="ignore")[:preview_length]
-                    global uploaded_file_count
+                 
                      # ...
 
                     uploaded_file_count += 1
