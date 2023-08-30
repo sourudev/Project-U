@@ -27,7 +27,7 @@ media_content_types = [
 responses = load_responses(
     "https://raw.githubusercontent.com/sourudev/Project-U/main/fact.JSON"
 )
-
+uploaded_file_count = 0
 
 @bot.event
 async def on_ready():
@@ -38,7 +38,7 @@ async def on_ready():
 @bot.hybrid_command(name="upload", description="อัปโหลดไฟล์")
 async def upload(ctx, attachment: discord.Attachment):
     global uploaded_file_count
-    await _upload(ctx, attachment,responses,media_content_types,uploaded_file_count)
+    uploaded_file_count =  await _upload(ctx, attachment,responses,media_content_types,uploaded_file_count)
 
 @bot.hybrid_command(name="status", description="แสดงการอัปโหลดและปิง")
 async def status(ctx):

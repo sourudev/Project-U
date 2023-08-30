@@ -83,7 +83,9 @@ async def _upload(ctx, attachment: discord.Attachment,responses,media_content_ty
                     embed = discord.Embed(title="ผลลัพท์", color=0xff0000)
                     embed.add_field(name="ความผิดพลาดของการอัปโหลด", value=f"```{error_message}```", inline=False)
                     await message.edit(content="", embed=embed)
+           
     except Exception as e:
         embed = discord.Embed(title="ขนส่งวิญญาณผิดพลาด", color=0xff0000)
         embed.add_field(name="ความผิดพลาดของการอัปโหลด", value=str(e), inline=False)
         await message.edit(content="", embed=embed)
+    return uploaded_file_count   
